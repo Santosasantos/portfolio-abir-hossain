@@ -1,5 +1,5 @@
 import { Icon } from "@/lib/icons";
-import { resolveUrl, type Content } from "@/lib/content";
+import { resolveUrl, withEmailTemplate, type Content } from "@/lib/content";
 import { SmartLink } from "./ui";
 import Portrait from "./Portrait";
 
@@ -18,7 +18,7 @@ export default function Hero({ c }: { c: Content }) {
             {c.headerItems.filter((h) => h.in_hero).map((h) => (
               <li key={h.id}>
                 <Icon name={h.icon} />
-                {h.url ? <SmartLink href={h.url}>{h.label}</SmartLink> : h.label}
+                {h.url ? <SmartLink href={withEmailTemplate(h.url, s)}>{h.label}</SmartLink> : h.label}
               </li>
             ))}
           </ul>

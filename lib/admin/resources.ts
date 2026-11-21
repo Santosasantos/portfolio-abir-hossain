@@ -75,6 +75,8 @@ export const RESOURCES: Resource[] = [
       { name: "scholar_h_index", label: "h-index", type: "number", group: "Publications" },
       { name: "contact_intro", label: "Contact intro", type: "textarea", group: "Contact & footer" },
       { name: "contact_note", label: "Contact note", type: "text", group: "Contact & footer" },
+      { name: "email_subject", label: "Email subject", type: "text", group: "Contact & footer", hint: "Pre-filled when a visitor presses “Email Me”. They can still change it before sending." },
+      { name: "email_body", label: "Email message", type: "textarea", group: "Contact & footer", hint: "Pre-filled message for visitors. {name} becomes your name; [brackets] are prompts for the visitor. Leave empty to use the built-in professional message." },
       { name: "footer_blurb", label: "Footer blurb", type: "textarea", group: "Contact & footer" },
       { name: "last_updated", label: "Last updated", type: "date", group: "Contact & footer" },
       { name: "meta_title", label: "Page title (SEO)", type: "text", group: "SEO" },

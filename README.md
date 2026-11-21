@@ -16,7 +16,7 @@ Built by Clockosoft. Design system: `docs/DESIGN_SYSTEM.md` · Architecture: `do
 ## Setup (about 10 minutes)
 
 1. **Create a Supabase project** at supabase.com.
-2. **Create the tables:** Supabase → SQL Editor → run `supabase/migrations/0001_schema.sql`, then `0002_media_theme.sql`, then `0003_honor_links.sql`, then `0004_profile_media.sql`, then `0005_project_tabs.sql`, then `0006_certificate_images.sql`, then `0007_flexible_links.sql` (in that order). Upgrading an existing database: run the migrations newer than your version, then `seed.sql` (v6 → `0007`; v5 → `0006`, `0007`; v4 → `0005`–`0007`; v3 → `0004`–`0007`). `0007` copies existing education certificate/thesis links and award links into the new link lists before removing the old columns, so it can also be run without re-seeding.
+2. **Create the tables:** Supabase → SQL Editor → run `supabase/migrations/0001_schema.sql`, then `0002_media_theme.sql`, then `0003_honor_links.sql`, then `0004_profile_media.sql`, then `0005_project_tabs.sql`, then `0006_certificate_images.sql`, then `0007_flexible_links.sql`, then `0008_visitors_email.sql` (in that order). Upgrading an existing database: run the migrations newer than your version (v7 → `0008`; v6 → `0007`, `0008`; v5 → `0006`–`0008`; v4 → `0005`–`0008`; v3 → `0004`–`0008`), then `seed.sql` only if you want to reset content. `0007` copies existing education certificate/thesis links and award links into the new link lists before removing the old columns, so it can also be run without re-seeding.
 3. **Load Abir's content:** run `supabase/seed.sql` the same way. (Re-running it resets content to the original.)
 4. **Create the admin login:** Supabase → Authentication → Users → *Add user* (email + password, tick *Auto confirm*).
 5. **Make yourself admin:** in the SQL Editor run
@@ -57,6 +57,16 @@ Open a publication, project or tool and use the **Media** box:
 - **Google Drive links** (slides, PDFs, videos): after adding, pick the right **Type** on the item (Video / Slides / PDF / Image). Drive slides and PDFs embed in the presentation panel and get a download button automatically; the file must be shared as "Anyone with the link".
 - If a paper has slides but no talk video, the slides are embedded in the video slot so the panel still looks complete.
 - PPTX "View here" previews use Microsoft's Office viewer, which needs the file at a public https address (true for uploads to Supabase).
+
+### Visitors (Admin → Insights → Visitors)
+- Every visit to the public page is recorded once per browser session: date, page, where the visitor came from (Google, LinkedIn…), country and city, device, browser and OS. No IP addresses are stored; a random id kept in the visitor's browser counts unique visitors.
+- Country and city come from the hosting provider's location headers, so they appear on Vercel (or behind Cloudflare). Running locally they show as *Unknown*.
+- Bots and crawlers are ignored, and your own browser stops being counted once you open the admin panel in it.
+- Pick 7 days, 30 days, 90 days or all time. Times use Bangladesh time; set `ADMIN_TIME_ZONE` to change it.
+
+### Default email (Site settings → Contact & footer)
+- **Email subject** and **Email message** are pre-filled in the visitor's email app when they press *Email Me* (or any email link). They can edit before sending, or send it as is.
+- `{name}` in the message becomes your name; `[brackets]` are prompts for the visitor. Leave the message empty to use the built-in professional text.
 
 ### Text formats in the forms
 - **Tags** (keywords, skills): comma separated.
