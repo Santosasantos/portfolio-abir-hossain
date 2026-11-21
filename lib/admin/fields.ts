@@ -3,6 +3,7 @@ import { parseMedia } from "@/lib/media";
 
 type Row = Record<string, unknown>;
 const SEP = " | ";
+type ScoreLine = { label: string; score: string; max?: number; min?: number };
 
 /** DB value → string shown in the form input. */
 export function encodeValue(field: Field, value: unknown): string {
@@ -14,6 +15,7 @@ export function encodeValue(field: Field, value: unknown): string {
     case "links": return (value as { label: string; url: string }[]).map((l) => `${l.label}${SEP}${l.url}`).join("\n");
     case "pairs": return (value as { value: string; label: string }[]).map((p) => `${p.value}${SEP}${p.label}`).join("\n");
     case "steps": return (value as { title: string; text: string }[]).map((s) => `${s.title}${SEP}${s.text}`).join("\n");
+    case "scores": return (value as ScoreLine[]).map((b) => [b.label, b.score, b.max, b.min].filter((x) => x != null && x !== "").join(SEP)).join("\n");
     case "media": return JSON.stringify(value);
     default: return String(value);
   }
@@ -45,6 +47,18 @@ export function decodeValue(field: Field, raw: string): { value: unknown; error?
     }
     case "pairs": return { value: lines(raw).map(splitPipe).map(([value, label]) => ({ value, label })) };
     case "steps": return { value: lines(raw).map(splitPipe).map(([title, text]) => ({ title, text })) };
+    case "scores": {
+      const out: ScoreLine[] = [];
+      for (const line of lines(raw)) {
+        const [label, score, max, min] = line.split("|").map((x) => x.trim());
+        const n = (x?: string) => (x ? Number(x) : undefined);
+        if (!label || !score) return { value: [], error: `${field.label}: "${line}" needs at least "Label | Score"` };
+        if ([n(score), n(max), n(min)].some((x) => x !== undefined && !Number.isFinite(x)))
+          return { value: [], error: `${field.label}: "${line}" — score, max and min must be numbers` };
+        out.push({ label, score, ...(max ? { max: n(max) } : {}), ...(min ? { min: n(min) } : {}) });
+      }
+      return { value: out };
+    }
     case "media": return parseMedia(raw);
     case "file": return { value: s || null };
     case "color":

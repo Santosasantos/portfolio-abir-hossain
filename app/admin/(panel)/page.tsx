@@ -12,6 +12,9 @@ export default async function Dashboard() {
     }),
   );
 
+  const { data: stats } = await supabase.rpc("visit_stats", { days: 30, tz: process.env.ADMIN_TIME_ZONE || "Asia/Dhaka" });
+  const visits = stats as { visits: number; visitors: number } | null;
+
   return (
     <>
       <div className="admin-head">
@@ -20,6 +23,16 @@ export default async function Dashboard() {
           <p className="muted">Everything on the public page comes from here. Changes go live as soon as you save.</p>
         </div>
       </div>
+      <section className="admin-dash-group">
+        <h2 className="eyebrow">Insights</h2>
+        <div className="admin-cards">
+          <Link href="/admin/visitors" className="card admin-card">
+            <span className="admin-card-title">Visitors</span>
+            <span className="muted">Visits, countries, where people came from and their devices.</span>
+            <span className="mono admin-card-count">{visits ? `${visits.visitors} visitors · ${visits.visits} visits (30 days)` : "Open"}</span>
+          </Link>
+        </div>
+      </section>
       {NAV_GROUPS.map((group) => (
         <section key={group} className="admin-dash-group">
           <h2 className="eyebrow">{group}</h2>

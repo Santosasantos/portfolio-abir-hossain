@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { requireAdmin } from "@/lib/admin/auth";
 import { signOut } from "@/lib/admin/actions";
 import { NAV_GROUPS, RESOURCES } from "@/lib/admin/resources";
+import SkipTracking from "@/components/admin/SkipTracking";
 
 export const metadata = { title: "Portfolio admin", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -12,6 +13,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   return (
     <div className="admin">
+      <SkipTracking />
       <aside className="admin-sidebar">
         <Link href="/admin" className="admin-brand">Portfolio admin</Link>
         <nav aria-label="Admin">
@@ -25,6 +27,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               </ul>
             </div>
           ))}
+          <div className="admin-nav-group">
+            <p className="eyebrow">Insights</p>
+            <ul><li><Link href="/admin/visitors">Visitors</Link></li></ul>
+          </div>
         </nav>
       </aside>
 

@@ -17,10 +17,11 @@ export type Settings = {
   background: string;
   scholar_url: string | null; scholar_citations: number | null; scholar_h_index: number | null;
   contact_intro: string; contact_note: string; footer_blurb: string;
+  email_subject: string; email_body: string;
   last_updated: string; meta_title: string; meta_description: string;
   theme_bg: string; theme_surface: string; theme_surface_alt: string; theme_ink: string; theme_muted: string;
   theme_border: string; theme_accent: string; theme_dark: string; theme_chip_bg: string; theme_chip_ink: string;
-  theme_font: string; dark_mode_enabled: boolean; achievements_visible: number;
+  theme_font: string; dark_mode_enabled: boolean; achievements_visible: number; logo_url: string | null;
 };
 export type Section = { key: string; nav_label: string; title: string; subtitle: string; sort_order: number; is_visible: boolean };
 export type HeaderItem = Base & { icon: string; label: string; url: string | null; in_hero: boolean; in_contact: boolean };
@@ -29,9 +30,16 @@ export type HeroButton = Base & { label: string; url: string; icon: string | nul
 export type HeroStat = Base & { value: string; suffix: string | null; label: string };
 export type Tag = Base & { grp: "interest" | "community"; label: string; emphasis: boolean };
 export type FeaturedItem = Base & { title: string; summary: string; date_label: string | null; links: LinkItem[] };
-export type Education = Base & { degree: string; institution: string; period: string | null; details: string | null; note: string | null };
+export type Education = Base & {
+  degree: string; institution: string; period: string | null; details: string | null; note: string | null;
+  logo_url: string | null; links: LinkItem[];
+};
 export type FocusPoint = Base & { label: string };
-export type TestScore = Base & { value: string; label: string; note: string | null };
+export type ScoreLine = { label: string; score: string; max?: number; min?: number };
+export type TestScore = Base & {
+  value: string; label: string; note: string | null; score_caption: string;
+  breakdown: ScoreLine[]; report_url: string | null; report_label: string;
+};
 export type SkillGroup = Base & { title: string; items: string[]; highlighted: string[] };
 export type Publication = Base & {
   category: "journal" | "conference" | "preprint" | "chapter" | "other";
@@ -42,15 +50,20 @@ export type Publication = Base & {
   code_url: string | null; poster_url: string | null; demo_url: string | null;
 };
 export type ResearchArea = Base & { icon: string; title: string; description: string };
-export type Experience = Base & { grp: "professional" | "academic"; period: string | null; title: string; org: string | null; bullets: string[] };
+export type Experience = Base & {
+  grp: string; period: string | null; title: string; org: string | null; bullets: string[];
+  logo_url: string | null; links: LinkItem[];
+};
 export type Project = Base & {
   featured: boolean; badge: string | null; year_label: string | null; icon: string;
   title: string; description: string; tags: string[]; links: LinkItem[]; pipeline: Step[]; media: MediaItem[];
+  category: string;
 };
 export type Tool = Base & { icon: string; title: string; description: string; features: string[]; tags: string[]; links: LinkItem[]; media: MediaItem[] };
-export type Honor = Base & { grp: "award" | "leadership"; year_label: string | null; title: string; subtitle: string | null; url?: string | null };
+export type Honor = Base & { grp: "award" | "leadership"; year_label: string | null; title: string; subtitle: string | null; links: LinkItem[]; image_url: string | null; description: string | null };
 export type Certification = Base & {
   title: string; issuer: string | null; date_label: string | null; url: string | null; description: string | null; topics: string[];
+  image_url: string | null; tags: string[];
 };
 
 export type Content = {
@@ -130,6 +143,23 @@ export async function getContent(): Promise<Content | null> {
 export function resolveUrl(url: string | null | undefined, settings: Settings) {
   if (!url) return null;
   return url.replace("{cv}", settings.cv_url ?? "#");
+}
+
+export const DEFAULT_EMAIL_SUBJECT = "Inquiry from your portfolio website";
+export const DEFAULT_EMAIL_BODY = "Dear {name},\n\nI came across your portfolio and am interested in your work. I would like to get in touch with you regarding [research collaboration / an opportunity / a question about your work].\n\n[A few lines about yourself and your message.]\n\nI look forward to hearing from you.\n\nBest regards,\n[Your name]\n[Your affiliation / organization]";
+
+/**
+ * Adds the admin's default subject and message to a mailto: link so the visitor's
+ * email app opens ready to send (they can still edit it). {name} becomes the owner's name.
+ * Links that already carry a subject/body are left as they are.
+ */
+export function withEmailTemplate(url: string, settings: Settings) {
+  if (!/^mailto:/i.test(url) || /[?&](subject|body)=/i.test(url)) return url;
+  const fill = (t: string) => t.replaceAll("{name}", settings.full_name || "there");
+  const subject = fill(settings.email_subject?.trim() || DEFAULT_EMAIL_SUBJECT);
+  const body = fill(settings.email_body?.trim() || DEFAULT_EMAIL_BODY).replace(/\r?\n/g, "\r\n");
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 export const isExternal = (url: string) => /^https?:\/\//i.test(url);

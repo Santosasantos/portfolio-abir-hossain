@@ -12,6 +12,7 @@ import Honors from "@/components/site/Honors";
 import Tools from "@/components/site/Tools";
 import Contact from "@/components/site/Contact";
 import Footer from "@/components/site/Footer";
+import VisitTracker from "@/components/site/VisitTracker";
 import { FONT_OPTIONS } from "@/lib/admin/resources";
 
 // Static page, refreshed on demand when the admin saves (revalidatePath) and hourly as a fallback.
@@ -53,7 +54,8 @@ export default async function HomePage() {
   return (
     <>
       <ThemeStyle s={c.settings} />
-      <SiteHeader name={c.settings.full_name} nav={nav} darkMode={c.settings.dark_mode_enabled} />
+      <SiteHeader name={c.settings.full_name} logo={c.settings.logo_url} nav={nav} darkMode={c.settings.dark_mode_enabled} />
+      <VisitTracker />
       <main id="main">
         <Hero c={c} />
         {sections.map((section, i) => {
