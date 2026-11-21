@@ -12,6 +12,7 @@ export type FieldType =
   | "links"  // jsonb [{label,url}]   — "Label | URL" per line
   | "pairs"  // jsonb [{value,label}] — "Value | Label" per line
   | "steps"  // jsonb [{title,text}]  — "Title | Text" per line
+  | "scores" // jsonb [{label,score,max,min}] — "Label | Score | Max | Min" per line
   | "file"   // single upload to Supabase Storage (photo, CV) with preview
   | "media"  // gallery: images, GIFs, video links, PPTX, PDF — with live previews
   | "color"; // hex color with picker
@@ -57,6 +58,7 @@ export const RESOURCES: Resource[] = [
     fields: [
       { name: "full_name", label: "Full name", type: "text", required: true, group: "Identity" },
       { name: "headline", label: "Headline", type: "text", group: "Identity", hint: "Shown under the name in the hero." },
+      { name: "logo_url", label: "Logo (navbar)", type: "file", accept: "image/*", group: "Identity", hint: "Shown beside your name in the top bar. Square PNG/SVG works best. Leave empty to show your initials." },
       { name: "photo_url", label: "Profile photo", type: "file", accept: "image/*", group: "Identity", hint: "Square image, about 600×600." },
       { name: "cv_url", label: "CV (PDF)", type: "file", accept: "application/pdf", group: "Identity", hint: "Buttons with the URL {cv} point here." },
       { name: "bio", label: "Hero bio", type: "textarea", group: "Hero" },
@@ -172,6 +174,8 @@ export const RESOURCES: Resource[] = [
       { name: "period", label: "Period", type: "text" },
       { name: "details", label: "Details", type: "text", hint: "e.g. CGPA, scholarships" },
       { name: "note", label: "Note", type: "textarea", hint: "e.g. thesis title" },
+      { name: "logo_url", label: "Institution logo", type: "file", accept: "image/*", hint: "Optional. Shown on the education card when uploaded." },
+      { name: "links", label: "Documents", type: "links", hint: "Optional. One button per line: Certificate | https://…  ·  Transcript | https://…  ·  Thesis Book | https://…" },
     ],
   },
   {
@@ -185,9 +189,13 @@ export const RESOURCES: Resource[] = [
     description: "GRE, IELTS and other score tiles.",
     columns: ["value", "label", "note"],
     fields: [
-      { name: "value", label: "Score", type: "text", required: true },
-      { name: "label", label: "Label", type: "text", required: true },
-      { name: "note", label: "Note", type: "text" },
+      { name: "label", label: "Test name", type: "text", required: true, hint: "e.g. IELTS, GRE General" },
+      { name: "value", label: "Overall score", type: "text", required: true, hint: "e.g. 7.0 or 306" },
+      { name: "score_caption", label: "Score caption", type: "text", hint: "Shown beside the big number, e.g. Overall Band, Total Score" },
+      { name: "breakdown", label: "Section scores", type: "scores", hint: "One per line: Label | Score | Max | Min (Min optional). e.g. Listening | 7.5 | 9   ·   Quant | 167 | 170 | 130" },
+      { name: "note", label: "Test date", type: "text", hint: "e.g. Sep 22, 2026" },
+      { name: "report_url", label: "Test report link", type: "url", hint: "Optional. Adds the download button; leave empty to hide it." },
+      { name: "report_label", label: "Report button text", type: "text", hint: "e.g. Download Test Report" },
     ],
   },
   {
@@ -239,10 +247,11 @@ export const RESOURCES: Resource[] = [
   },
   {
     key: "projects", table: "projects", label: "Projects", nav: "Research",
-    description: "Featured projects (with a pipeline) and the project grid.",
-    columns: ["title", "media", "year_label", "featured"],
+    description: "Featured projects (with a pipeline) and the project grid, grouped into tabs by the Tab field.",
+    columns: ["title", "media", "category", "year_label", "featured"],
     fields: [
       { name: "title", label: "Title", type: "text", required: true },
+      { name: "category", label: "Tab", type: "text", hint: "The tab this project appears under, e.g. Research or Coursework. Projects with the same name share a tab; an All tab is added automatically. Empty = Projects." },
       { name: "description", label: "Description", type: "textarea" },
       { name: "year_label", label: "Year / label", type: "text" },
       icon(),
@@ -275,11 +284,13 @@ export const RESOURCES: Resource[] = [
     description: "Professional and academic timeline entries.",
     columns: ["title", "org", "period", "grp"],
     fields: [
-      { name: "grp", label: "Group", type: "select", options: [{ value: "professional", label: "Professional" }, { value: "academic", label: "Academic & research" }] },
+      { name: "grp", label: "Section", type: "text", required: true, hint: "The heading this entry is listed under, e.g. Professional Experience, Academic & Research Experience, Industrial Training. Entries with the same name are grouped; sections follow the list order." },
       { name: "title", label: "Role", type: "text", required: true },
       { name: "org", label: "Organization · location", type: "text" },
       { name: "period", label: "Period", type: "text" },
       { name: "bullets", label: "Highlights", type: "lines", hint: "One per line" },
+      { name: "logo_url", label: "Organization logo", type: "file", accept: "image/*", hint: "Optional. Shown beside the role when uploaded." },
+      { name: "links", label: "Work links", type: "links", hint: "Optional. One per line: Thesis Book | https://…  ·  Industrial Attachment Report | https://…  ·  Presentation Slides | https://…" },
     ],
   },
   {
@@ -290,21 +301,25 @@ export const RESOURCES: Resource[] = [
       { name: "grp", label: "Group", type: "select", options: [{ value: "award", label: "Award" }, { value: "leadership", label: "Leadership" }] },
       { name: "year_label", label: "Year", type: "text" },
       { name: "title", label: "Title", type: "text", required: true },
-      { name: "subtitle", label: "Detail", type: "text" },
-      { name: "url", label: "Certificate link", type: "url", hint: "Optional. Shows a “Certificate” link beside the award (Google Drive, PDF…)." },
+      { name: "subtitle", label: "Event / organizer", type: "text", hint: "Shown under the title in the accent color." },
+      { name: "description", label: "Description", type: "textarea", hint: "Awards only. A sentence or two shown on the card." },
+      { name: "image_url", label: "Photo", type: "file", accept: "image/*", hint: "Awards only. Optional; an award icon is shown when empty." },
+      { name: "links", label: "Links", type: "links", hint: "Optional. One button per line: Certificate | https://…  ·  Award | https://…  ·  News | https://…" },
     ],
   },
   {
     key: "certifications", table: "certifications", label: "Certifications", nav: "Career",
-    description: "Courses and certificates.",
+    description: "Courses and certificates, shown as cards with the certificate image.",
     columns: ["title", "issuer", "date_label"],
     fields: [
       { name: "title", label: "Title", type: "text", required: true },
       { name: "issuer", label: "Issuer", type: "text" },
       { name: "date_label", label: "Date", type: "text" },
-      { name: "url", label: "Certificate URL", type: "url" },
-      { name: "description", label: "Description", type: "textarea" },
-      { name: "topics", label: "Key topics", type: "lines", hint: "One per line" },
+      { name: "tags", label: "Tags", type: "tags", hint: "Comma separated, shown as chips like on projects, e.g. Python, Data Science" },
+      { name: "image_url", label: "Certificate image", type: "file", accept: "image/*", hint: "A screenshot or scan of the certificate (landscape works best). Leave empty to show the issuer name instead." },
+      { name: "url", label: "Certificate link", type: "url", hint: "Opens from the card's “Check the Certificate” button. Leave empty to hide the button." },
+      { name: "description", label: "Description (not shown on cards)", type: "textarea" },
+      { name: "topics", label: "Key topics (not shown on cards)", type: "lines", hint: "One per line" },
     ],
   },
 

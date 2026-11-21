@@ -35,7 +35,7 @@ function Input({ field, value, folder }: { field: Field; value: string; folder: 
           <span>{field.label}</span>
         </label>
       );
-    case "textarea": case "lines": case "links": case "pairs": case "steps":
+    case "textarea": case "lines": case "links": case "pairs": case "steps": case "scores":
       return <textarea {...common} rows={field.mono ? 10 : field.type === "textarea" ? 5 : 4} className={field.mono ? "mono" : undefined} />;
     case "select": case "icon":
       return (

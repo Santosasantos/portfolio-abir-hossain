@@ -20,7 +20,7 @@ export type Settings = {
   last_updated: string; meta_title: string; meta_description: string;
   theme_bg: string; theme_surface: string; theme_surface_alt: string; theme_ink: string; theme_muted: string;
   theme_border: string; theme_accent: string; theme_dark: string; theme_chip_bg: string; theme_chip_ink: string;
-  theme_font: string; dark_mode_enabled: boolean; achievements_visible: number;
+  theme_font: string; dark_mode_enabled: boolean; achievements_visible: number; logo_url: string | null;
 };
 export type Section = { key: string; nav_label: string; title: string; subtitle: string; sort_order: number; is_visible: boolean };
 export type HeaderItem = Base & { icon: string; label: string; url: string | null; in_hero: boolean; in_contact: boolean };
@@ -29,9 +29,16 @@ export type HeroButton = Base & { label: string; url: string; icon: string | nul
 export type HeroStat = Base & { value: string; suffix: string | null; label: string };
 export type Tag = Base & { grp: "interest" | "community"; label: string; emphasis: boolean };
 export type FeaturedItem = Base & { title: string; summary: string; date_label: string | null; links: LinkItem[] };
-export type Education = Base & { degree: string; institution: string; period: string | null; details: string | null; note: string | null };
+export type Education = Base & {
+  degree: string; institution: string; period: string | null; details: string | null; note: string | null;
+  logo_url: string | null; links: LinkItem[];
+};
 export type FocusPoint = Base & { label: string };
-export type TestScore = Base & { value: string; label: string; note: string | null };
+export type ScoreLine = { label: string; score: string; max?: number; min?: number };
+export type TestScore = Base & {
+  value: string; label: string; note: string | null; score_caption: string;
+  breakdown: ScoreLine[]; report_url: string | null; report_label: string;
+};
 export type SkillGroup = Base & { title: string; items: string[]; highlighted: string[] };
 export type Publication = Base & {
   category: "journal" | "conference" | "preprint" | "chapter" | "other";
@@ -42,15 +49,20 @@ export type Publication = Base & {
   code_url: string | null; poster_url: string | null; demo_url: string | null;
 };
 export type ResearchArea = Base & { icon: string; title: string; description: string };
-export type Experience = Base & { grp: "professional" | "academic"; period: string | null; title: string; org: string | null; bullets: string[] };
+export type Experience = Base & {
+  grp: string; period: string | null; title: string; org: string | null; bullets: string[];
+  logo_url: string | null; links: LinkItem[];
+};
 export type Project = Base & {
   featured: boolean; badge: string | null; year_label: string | null; icon: string;
   title: string; description: string; tags: string[]; links: LinkItem[]; pipeline: Step[]; media: MediaItem[];
+  category: string;
 };
 export type Tool = Base & { icon: string; title: string; description: string; features: string[]; tags: string[]; links: LinkItem[]; media: MediaItem[] };
-export type Honor = Base & { grp: "award" | "leadership"; year_label: string | null; title: string; subtitle: string | null; url?: string | null };
+export type Honor = Base & { grp: "award" | "leadership"; year_label: string | null; title: string; subtitle: string | null; links: LinkItem[]; image_url: string | null; description: string | null };
 export type Certification = Base & {
   title: string; issuer: string | null; date_label: string | null; url: string | null; description: string | null; topics: string[];
+  image_url: string | null; tags: string[];
 };
 
 export type Content = {

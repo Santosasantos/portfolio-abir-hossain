@@ -53,7 +53,7 @@ export default async function HomePage() {
   return (
     <>
       <ThemeStyle s={c.settings} />
-      <SiteHeader name={c.settings.full_name} nav={nav} darkMode={c.settings.dark_mode_enabled} />
+      <SiteHeader name={c.settings.full_name} logo={c.settings.logo_url} nav={nav} darkMode={c.settings.dark_mode_enabled} />
       <main id="main">
         <Hero c={c} />
         {sections.map((section, i) => {

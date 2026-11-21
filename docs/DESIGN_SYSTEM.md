@@ -55,7 +55,16 @@ Off by default (the reference is light only). When **Offer a dark-mode toggle** 
 | Conference Presentation panel | Navy `--info` left rule; slides embedded in the 16:9 slot when there is no video; 16:9 video (YouTube-nocookie, Vimeo, Drive, Loom or MP4) + slide-deck card (Download PPTX/PDF, "View here" Office/PDF viewer); note line underneath |
 | Artifacts row | Code · Slides · Poster · Demo/Video — amber linked chip when available, grey "Not available" otherwise |
 | Project / tool card | 16:9 screenshot, GIF or YouTube still (opens the video) header, icon tile when no media, icon + title, description, checklist (tools), tags, buttons |
-| Award list | Year in clay, collapses after *n* items behind "Show more" |
+| Navbar brand | Logo image (32px, rounded) or dark initials tile, then the name |
+| Links | Quiet underline that darkens to `--link-hover` on hover; buttons lift 1px with a soft shadow, no colored glow; keyboard focus shows a 2px `--focus` ring |
+| Education card | 3px clay top rule, optional 56px institution logo, period, degree, institution, details, optional Certificate / Thesis Book buttons |
+| Test score card | Standard card with 3px clay top rule (same as Education); clay test name, date, large serif score + caption, sub-score rows with clay bars on a beige track, "Download Test Report" outline button |
+| Experience entry | Optional 44px organization logo beside title/org; work-link buttons with icons picked from the title (slides, video, code, certificate, file) |
+| Project tabs | Centered pill strip in the button style with a count; the active tab is the dark primary fill. Arrow keys, Home and End move between tabs. Hidden when every project shares one tab |
+| Card (shared) | Project, tool, certificate and award cards share one design: 4px green (`--award`) top rule, inset rounded media tile (icon when no image), centered title, accent/meta lines, description, tag chips and outline buttons pinned to the bottom |
+| Award card | 4px green (`--award`) top rule, photo or award-icon tile, centered title, green event line, date, description, optional row of link buttons (Certificate, Award…) pinned to the bottom; 3 / 2 / 1 columns; extra awards behind "Show N more achievements" |
+| Certificate card | Certificate image on a beige 16:10 tile (issuer name + award icon when no image), bold title, issuer, date, tag chips, full-width outline “Check the Certificate” button; 3 / 2 / 1 columns |
+| Leadership list | Year in clay, title, detail, optional "View certificate" link |
 | Footer | Dark, ivory text, three link columns, last-updated stamp |
 
 ## 3. Admin media editor

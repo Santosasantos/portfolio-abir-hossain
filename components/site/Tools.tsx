@@ -1,4 +1,3 @@
-import { Icon } from "@/lib/icons";
 import type { Content, Section } from "@/lib/content";
 import { CardMedia, LinkButtons } from "./Projects";
 import { ChipList, SectionHead } from "./ui";
@@ -14,11 +13,11 @@ export default function Tools({ c, section, alt }: { c: Content; section: Sectio
             <article key={t.id} className="card card--tool">
               <CardMedia media={t.media} title={t.title} icon={t.icon} />
               <div className="card-body">
-                <h3><Icon name={t.icon} />{t.title}</h3>
-                {t.description && <p>{t.description}</p>}
+                <h3>{t.title}</h3>
+                {t.description && <p className="card-desc">{t.description}</p>}
                 {t.features.length > 0 && <ul className="feature-checks">{t.features.map((f, i) => <li key={i}>{f}</li>)}</ul>}
                 <ChipList items={t.tags} label="Tags" />
-                <LinkButtons links={t.links} primaryFirst />
+                <LinkButtons links={t.links} />
               </div>
             </article>
           ))}

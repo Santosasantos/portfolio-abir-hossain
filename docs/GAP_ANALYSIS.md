@@ -63,3 +63,19 @@ Compared the build against koshikdebanath.me again, focused on the publication c
 | Ongoing CT kidney work and the new MIST paper missing | Kidney CT study added under "Preprints & Work in Progress"; MIST paper added to Featured Work with a hidden placeholder publication waiting for details |
 | No favicon (404 on every load) | `app/icon.svg` monogram |
 | `npm run lint` had no ESLint setup | ESLint 8 + `next/core-web-vitals` config added |
+
+
+## 6. v4 pass (November 17, 2026): client feedback
+
+| # | Feedback | What changed |
+|---|---|---|
+| 1 | Logo placeholder beside the name | `site_settings.logo_url`, uploaded in Site settings → Identity. Initials tile shows until a logo is uploaded. |
+| 2 | Professional link styling | One link system: subtle underline, hover color, 1px lift with soft shadow on buttons, visible keyboard focus ring. Removed the colored hover glow. |
+| 3 | Education redesign | Cards with optional institution logo and optional Certificate / Thesis Book buttons (hidden when empty). |
+| 4 | Test scores like the client sample | The client sample's layout (one card per test, big score, sub-score bars, report button) drawn in the site's own Paper & Clay theme, with a report link set in the admin. IELTS 7.0 and GRE 306 seeded with report links from his site. |
+| 5 | Professional experience logos | `experiences.logo_url`; shown only when uploaded. |
+| 6 | Academic experience logos + work links | Same logo field, plus `experiences.links` (`Title | URL` per line). The title becomes the button text. Seeded with thesis code and both ICCIT slide decks. |
+| 7 | Publication link glow | Publication buttons use the same neutral hover as every other button. |
+| 8 | Awards like the client sample | Card grid with green top rule, photo or icon, event line in green, date, description and an optional "View Award" link. |
+
+Schema: `supabase/migrations/0004_profile_media.sql`. Logos and award photos are not seeded because the institutions' sites could not be downloaded from the build environment; upload them in the admin.

@@ -16,7 +16,7 @@ Built by Clockosoft. Design system: `docs/DESIGN_SYSTEM.md` · Architecture: `do
 ## Setup (about 10 minutes)
 
 1. **Create a Supabase project** at supabase.com.
-2. **Create the tables:** Supabase → SQL Editor → run `supabase/migrations/0001_schema.sql`, then `0002_media_theme.sql`, then `0003_honor_links.sql` (in that order). Upgrading an existing v2 database: run only `0003_honor_links.sql`, then `seed.sql`.
+2. **Create the tables:** Supabase → SQL Editor → run `supabase/migrations/0001_schema.sql`, then `0002_media_theme.sql`, then `0003_honor_links.sql`, then `0004_profile_media.sql`, then `0005_project_tabs.sql`, then `0006_certificate_images.sql`, then `0007_flexible_links.sql` (in that order). Upgrading an existing database: run the migrations newer than your version, then `seed.sql` (v6 → `0007`; v5 → `0006`, `0007`; v4 → `0005`–`0007`; v3 → `0004`–`0007`). `0007` copies existing education certificate/thesis links and award links into the new link lists before removing the old columns, so it can also be run without re-seeding.
 3. **Load Abir's content:** run `supabase/seed.sql` the same way. (Re-running it resets content to the original.)
 4. **Create the admin login:** Supabase → Authentication → Users → *Add user* (email + password, tick *Auto confirm*).
 5. **Make yourself admin:** in the SQL Editor run
@@ -38,13 +38,13 @@ Optional hardening: Supabase → Authentication → Providers → Email → turn
 
 | Admin page | Controls |
 |---|---|
-| Site settings | Name, headline, bio, photo upload, CV upload, status card, About background, Scholar stats, contact text, footer, SEO, **theme colors, typeface, dark-mode switch** |
+| Site settings | **Navbar logo** (shown beside the name; initials appear when empty), name, headline, bio, photo upload, CV upload, status card, About background, Scholar stats, contact text, footer, SEO, **theme colors, typeface, dark-mode switch** |
 | Header info | Every line under the name (institution, location, email, phone) — each with its own link, shown in hero and/or contact |
 | Social links | Scholar, GitHub, LinkedIn, Kaggle, ResearchGate, ORCID, X… — choose hero / contact / footer placement |
 | Hero buttons · Hero stats · Featured work · Interests & community | Everything in the hero |
-| Education · Research focus · Test scores · Skills | About section |
-| Publications · Research areas · Projects · Tools & demos | Research content: metrics, BibTeX, pipelines, **figures, talk videos, PPTX/PDF slides, screenshots and GIFs with live previews** |
-| Experience · Awards & leadership · Certifications | Career content |
+| Education · Research focus · Test scores · Skills | About section. Education: **institution logo** and **Documents** — any number of buttons such as Certificate, Transcript, Thesis Book (hidden when empty). Test scores: one row per test with overall score, caption, **sub-score bars** and a **test report link** |
+| Publications · Research areas · Projects · Tools & demos | Projects have a **Tab** field (e.g. Research, Coursework): projects with the same tab name are grouped, and an *All* tab is added automatically when there is more than one. Research content: metrics, BibTeX, pipelines, **figures, talk videos, PPTX/PDF slides, screenshots and GIFs with live previews** |
+| Experience · Awards & leadership · Certifications | Career content. Experience: **Section** (free text — Professional Experience, Academic & Research Experience, Industrial Training or any new heading), **organization logo** and **work links** (thesis book, industrial attachment report, slides; the title you type is the button text). Awards: **photo, description and any number of links** (Certificate, Award, News…; all optional). Certifications: **certificate image**, **tags** and link, shown as cards with a *Check the Certificate* button |
 | Sections & menu | Rename, reorder or hide whole sections and their menu labels |
 
 Every list supports add, edit, delete, move up/down and show/hide. Saving updates the public page immediately.
@@ -64,6 +64,11 @@ Open a publication, project or tool and use the **Media** box:
 - **Links / key results / pipeline steps:** one per line as `Label | URL`, `99.16% | Dataset II`, `Data | 3,264 MRI images`.
 - **Hero button URL `{cv}`** points to whichever CV is uploaded in Site settings.
 - **Background text:** leave a blank line between paragraphs.
+- **Test score breakdown:** one line per sub-score as `Label | Score | Max | Min`, e.g. `Listening | 7.5 | 9` or `Verbal | 139 | 170 | 130`. Max and Min set how full the bar is (Min defaults to 0); leave them out to show the value without a bar.
+- **Education documents / award links:** one per line as `Certificate | https://…`, `Transcript | https://…`, `Award | https://…`. The icon is picked from the title.
+- **Hidden placeholders:** the seed adds an SSC education entry and a Spring Rain *Industrial Training* entry switched off. Fill them in, then turn on *Visible*.
+- **Experience work links:** one per line as `Thesis Book | https://…`, `Industrial Attachment Report | https://…`, `Presentation Slides | https://…`.
+- **Logos and award photos:** upload a PNG/SVG/JPG. Anything left empty is simply not shown on the site.
 
 ## Adding a new kind of content
 

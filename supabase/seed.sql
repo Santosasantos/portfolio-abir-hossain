@@ -32,10 +32,13 @@ insert into public.site_settings (
   'I am applying for PhD positions starting Fall 2027 and welcome conversations about medical image analysis, explainable deep learning, and AI for biomedicine.',
   'Based in Rajshahi, Bangladesh · References available on request',
   'Deep learning for medical imaging, transfer learning, and explainable AI in biomedicine.',
-  '2026-10-12',
+  '2026-11-17',
   'Abir Hasan | Researcher in Medical Imaging & Computer Vision',
   'Abir Hasan — CSE graduate from RUET and IEEE-published researcher in medical image analysis, transfer learning, and explainable AI. Prospective PhD student, Fall 2027.'
 );
+
+-- Awards shown before "Show more" (two rows of three cards). Upload a navbar logo in Admin → Site settings.
+update public.site_settings set achievements_visible = 6, logo_url = null where id = 1;
 
 insert into public.sections (key, nav_label, title, subtitle, sort_order) values
   ('about',        'About',        'About',                 'Research background and academic profile', 1),
@@ -116,12 +119,15 @@ insert into public.featured_items (title, summary, date_label, links, sort_order
    '2020',
    '[{"label": "Certificate", "url": "https://drive.google.com/file/d/13M4XUj-8PMvsntC73Q7cJZMZxAeusS1c/view?usp=sharing"}, {"label": "Honors", "url": "#honors"}]', 6);
 
-insert into public.education (degree, institution, period, details, note, sort_order) values
+-- Institution logos, certificate and thesis-book links are optional: add them in Admin → Education when available.
+insert into public.education (degree, institution, period, details, note, links, is_visible, sort_order) values
   ('B.Sc. in Computer Science & Engineering', 'Rajshahi University of Engineering & Technology (RUET)',
-   '2018 – 2023', 'CGPA 3.23 / 4.00 · Merit Scholarship 2018–2022',
-   'Thesis: Enhanced Multi-Class Brain Tumor Classification for MRI Images Using Fine-tuned Deep Learning Approaches — supervised by Rizoan Toufiq', 1),
+   '2018 – 2023', 'CGPA 3.23 / 4.00 · Graduated Sep 5, 2023 · Merit Scholarship 2018–2022',
+   'Thesis: Enhanced Multi-Class Brain Tumor Classification for MRI Images Using Fine-tuned Deep Learning Approaches — supervised by Rizoan Toufiq', '[]', true, 1),
   ('Higher Secondary Certificate (Science)', 'Adamjee Cantonment College, Dhaka',
-   '2017', 'Academic Excellence & Best Student Performance Award', null, 2);
+   '2017', 'Academic Excellence & Best Student Performance Award', null, '[]', true, 2),
+  -- Placeholder (hidden): fill in school, year and GPA in Admin → Education, add links, then switch it to visible.
+  ('Secondary School Certificate (SSC)', 'School name', null, 'GPA', null, '[]', false, 3);
 
 insert into public.focus_points (label, sort_order) values
   ('Medical image analysis — brain tumor classification from MRI', 1),
@@ -131,11 +137,11 @@ insert into public.focus_points (label, sort_order) values
   ('Explainable AI for trustworthy biomedical decision support', 5),
   ('Bioinformatics and machine learning in biomedicine', 6);
 
-insert into public.test_scores (value, label, note, sort_order) values
-  ('306', 'GRE total', 'Oct 29, 2025', 1),
-  ('167', 'GRE Quant', 'AWA 3.5', 2),
-  ('7.0', 'IELTS overall', 'Sep 22, 2026 · C1', 3),
-  ('8.0', 'IELTS reading', 'L 7.5 · W 6.5 · S 6.5', 4);
+insert into public.test_scores (label, value, score_caption, breakdown, note, report_url, report_label, sort_order) values
+  ('IELTS', '7.0', 'Overall Band', '[{"label": "Listening", "score": "7.5", "max": 9}, {"label": "Reading", "score": "8.0", "max": 9}, {"label": "Writing", "score": "6.5", "max": 9}, {"label": "Speaking", "score": "6.5", "max": 9}]', 'Sep 22, 2026 · CEFR C1',
+   'https://drive.google.com/file/d/17xHMYR-1qWBb4-6Nh_RTsSsY7qmoLRep/view?usp=drive_link', 'Download Test Report', 1),
+  ('GRE General', '306', 'Total Score', '[{"label": "Verbal", "score": "139", "max": 170, "min": 130}, {"label": "Quant", "score": "167", "max": 170, "min": 130}, {"label": "Analytical", "score": "3.5", "max": 6}]', 'Oct 29, 2025',
+   'https://drive.google.com/file/d/10AJD7vA3TviNl7yf9pVbl5ghtGcCrX_R/view?usp=sharing', 'Download Score Report', 2);
 
 insert into public.skill_groups (title, items, highlighted, sort_order) values
   ('Programming languages', '{Python,C,C++,SQL,Assembly,Verilog}', '{Python}', 1),
@@ -196,13 +202,19 @@ insert into public.research_areas (icon, title, description, sort_order) values
   ('eye',    'Explainable & Trustworthy AI', 'Making diagnostic models interpretable — saliency and attribution methods, error analysis, and evaluation practices that help clinicians understand and trust model predictions.', 3),
   ('dna',    'Bioinformatics & ML for Biomedicine', 'Applying machine learning to biological and healthcare data, and data-quality practices from large-model training — annotation, evaluation, and supervised fine-tuning datasets.', 4);
 
-insert into public.experiences (grp, period, title, org, bullets, sort_order) values
-  ('professional', '2024 – Present', 'AI Tutor — Expert Annotator', 'Mindrift · Werftestrasse 4, Switzerland (Remote)',
-   '{"Evaluate, refine, and annotate model outputs for reasoning, programming, and NLP tasks to improve AI alignment.","Create high-quality supervised fine-tuning datasets that improve factual correctness, safety, and model generalization."}', 1),
-  ('professional', 'May 2024 – Dec 2024', 'Freelance AI Trainer', 'Outlier · Oakland, USA (Remote)',
-   '{"Produced instruction-tuning and preference-ranking datasets to improve model consistency and reasoning ability.","Contributed to scalable data pipelines used for model training, evaluation, and alignment optimization."}', 2),
-  ('academic', '2022 – 2023', 'Undergraduate Researcher', 'Dept. of CSE, Rajshahi University of Engineering & Technology · Supervisor: Rizoan Toufiq',
-   '{"Proposed three custom CNN models and an ensemble that averages fine-tuned pretrained models for multi-class brain tumor classification.","Benchmarked six transfer-learning backbones on two brain MRI datasets; results published as two IEEE ICCIT 2023 papers."}', 3);
+-- Organization logos are optional (Admin → Experience). Work links show as buttons under each role.
+insert into public.experiences (grp, period, title, org, bullets, links, sort_order) values
+  ('Professional Experience', '2024 – Present', 'AI Tutor — Expert Annotator', 'Mindrift · Werftestrasse 4, Switzerland (Remote)',
+   '{"Evaluate, refine, and annotate model outputs for reasoning, programming, and NLP tasks to improve AI alignment.","Create high-quality supervised fine-tuning datasets that improve factual correctness, safety, and model generalization."}', '[]', 1),
+  ('Professional Experience', 'May 2024 – Dec 2024', 'Freelance AI Trainer', 'Outlier · Oakland, USA (Remote)',
+   '{"Produced instruction-tuning and preference-ranking datasets to improve model consistency and reasoning ability.","Contributed to scalable data pipelines used for model training, evaluation, and alignment optimization."}', '[]', 2),
+  ('Academic & Research Experience', '2022 – 2023', 'Undergraduate Researcher', 'Dept. of CSE, Rajshahi University of Engineering & Technology · Supervisor: Rizoan Toufiq',
+   '{"Proposed three custom CNN models and an ensemble that averages fine-tuned pretrained models for multi-class brain tumor classification.","Benchmarked six transfer-learning backbones on two brain MRI datasets; results published as two IEEE ICCIT 2023 papers."}',
+   '[{"label": "Thesis Code & Notebooks", "url": "https://github.com/Bosshero476/Undergraduate-Thesis-Multi-Class-Brain-Tumor-Classification-Using-MRI-Images"}, {"label": "ICCIT 2023 Slides · Transfer Learning", "url": "https://drive.google.com/file/d/1gojRcSDqiMcAuSyV_lFVMwg4XKU7r8ez/view?usp=sharing"}, {"label": "ICCIT 2023 Slides · Optimized CNN", "url": "https://drive.google.com/file/d/16leAy_GxXiufNI6mo5MJDRVgXwKbmtSG/view?usp=sharing"}]', 3);
+-- Placeholder (hidden): Admin → Experience → fill in period, highlights, logo and the
+-- Industrial Attachment Report / Presentation Slides links, then switch it to visible.
+insert into public.experiences (grp, period, title, org, bullets, links, is_visible, sort_order) values
+  ('Industrial Training', null, 'Industrial Trainee', 'Spring Rain', '{}', '[]', false, 4);
 
 insert into public.projects (featured, badge, year_label, icon, title, description, tags, links, pipeline, media, sort_order) values
   (true, 'Featured · Undergraduate Thesis', '2023', 'brain', 'Automated Multi-Class Brain Tumor Classification Using MRI',
@@ -241,34 +253,49 @@ insert into public.projects (featured, badge, year_label, icon, title, descripti
    '[{"label": "GitHub", "url": "https://github.com/Bosshero476/Line-Follower-Robot-with-Arduino-Uno"}]',
    '[]',
    '[{"kind": "image", "url": "/media/project-line-follower.webp", "caption": "The assembled line follower robot", "role": "thumbnail"}]', 6),
-  (false, null, 'Coursework', 'layers', 'Database Systems',
+  (false, null, 'Sessional', 'layers', 'Database Systems',
    'Relational database design work from the RUET sessional course — schema modelling, normalization, and SQL.',
    '{"SQL","Database Design"}',
    '[{"label": "GitHub", "url": "https://github.com/Bosshero476/Sessional_Database_Systems"}]',
    '[]',
    '[]', 7);
 
-insert into public.honors (grp, year_label, title, subtitle, url, sort_order) values
-  ('award', '2025', 'Top 20, Graduation Round', 'National Green Energy Olympiad 2025 (GEO 2025)', 'https://drive.google.com/file/d/17MGb8wWFti9_K-JyH7gZDotvWDiuIuup/view?usp=sharing', 1),
-  ('award', '2021', 'Rajshahi Region Top 10', '12th National Undergraduate Math Olympiad', 'https://drive.google.com/file/d/1TXBrpbSPFW8jawZuAVsPBHOVI6YWybsb/view?usp=sharing', 2),
-  ('award', '2020', 'Winner, National Hackathon 2020 (Group 7)', 'Team RUET ABACUS — AI-driven occupational health & safety system, IDEA project', 'https://drive.google.com/file/d/13M4XUj-8PMvsntC73Q7cJZMZxAeusS1c/view?usp=sharing', 3),
-  ('award', '2018–22', 'Merit Scholarship', 'Rajshahi University of Engineering & Technology', null, 4),
-  ('award', '2017', 'Academic Excellence & Best Student Performance', 'Adamjee Cantonment College', 'https://drive.google.com/file/d/1KcBhv8SjHDkCiF0gEBnJ15jv6J3V7DjN/view?usp=sharing', 5),
-  ('award', '2016', '1st Prize, Project Display (IT Senior)', '2nd ACC National Science Festival — "Calculator Game"', 'https://drive.google.com/file/d/1clSC4xxQrVbRmcL_7AZGul-t3cHYldOh/view?usp=sharing', 6),
-  ('award', '2015', '1st Position, Chemistry Olympiad', 'ACC Science Festival, Neutrino ACC Science Club', 'https://drive.google.com/file/d/1KlWUF43zd0Ae_Bj0CYC67taB-1XmwdjV/view?usp=sharing', 7),
-  ('award', '2011', '1st, General Knowledge Quiz Competition', 'Monipur High School & College', null, 8),
-  ('leadership', '2020', 'Team Coordinator', 'National Hackathon 2020', null, 1),
-  ('leadership', '2018–19', 'Team Leader', 'Codesmash 2018 and Gyanjam 2019 programming competitions', null, 2),
-  ('leadership', '2016–17', 'Prefect & Class Captain', 'Adamjee Cantonment College', null, 3),
-  ('leadership', null, 'Research Mentor', 'Mentored juniors on deep learning and computer vision research', null, 4);
+-- Tabs on the Projects section (Admin → Projects → Tab). The thesis is research; the rest came from RUET courses.
+update public.projects set category = case when featured then 'Research' else 'Coursework' end;
+
+-- Award photos are optional (Admin → Awards & leadership → Photo); an award icon shows until one is added.
+insert into public.honors (grp, year_label, title, subtitle, description, links, sort_order) values
+  ('award', '2025', 'Top 20, Graduation Round', 'National Green Energy Olympiad 2025 (GEO 2025)', 'Reached the graduation round of the national Green Energy Olympiad, finishing among the top 20 participants.', '[{"label": "Certificate", "url": "https://drive.google.com/file/d/17MGb8wWFti9_K-JyH7gZDotvWDiuIuup/view?usp=sharing"}]', 1),
+  ('award', '2021', 'Rajshahi Region Top 10', '12th National Undergraduate Math Olympiad', 'Placed in the top 10 of the Rajshahi region at the 12th National Undergraduate Mathematics Olympiad.', '[{"label": "Certificate", "url": "https://drive.google.com/file/d/1TXBrpbSPFW8jawZuAVsPBHOVI6YWybsb/view?usp=sharing"}]', 2),
+  ('award', '2020', 'Winner, National Hackathon 2020', 'National Hackathon 2020 (Group 7) · IDEA project', 'Team RUET ABACUS won Group 7 with an AI-driven occupational health and safety system built under the IDEA project.', '[{"label": "Certificate", "url": "https://drive.google.com/file/d/13M4XUj-8PMvsntC73Q7cJZMZxAeusS1c/view?usp=sharing"}]', 3),
+  ('award', '2018–2022', 'Merit Scholarship', 'Rajshahi University of Engineering & Technology', 'Awarded the university merit scholarship throughout the B.Sc. program.', '[]', 4),
+  ('award', '2017', 'Academic Excellence & Best Student Performance', 'Adamjee Cantonment College', 'Recognized for academic excellence and best overall student performance at higher-secondary level.', '[{"label": "Award", "url": "https://drive.google.com/file/d/1KcBhv8SjHDkCiF0gEBnJ15jv6J3V7DjN/view?usp=sharing"}]', 5),
+  ('award', '2016', '1st Prize, Project Display (IT Senior)', '2nd ACC National Science Festival 2016', 'Won first prize in the IT Senior project display with "Calculator Game" at the Islami Bank Bangladesh Ltd 2nd ACC National Science Festival.', '[{"label": "Certificate", "url": "https://drive.google.com/file/d/1clSC4xxQrVbRmcL_7AZGul-t3cHYldOh/view?usp=sharing"}]', 6),
+  ('award', '2015', '1st Position, Chemistry Olympiad', 'ACC Science Festival 2015 · Neutrino ACC Science Club', 'Took first position in the Chemistry Olympiad at the PRAN Mango Fruit Drink ACC Science Festival organized by NASC.', '[{"label": "Certificate", "url": "https://drive.google.com/file/d/1KlWUF43zd0Ae_Bj0CYC67taB-1XmwdjV/view?usp=sharing"}]', 7),
+  ('award', '2011', '1st, General Knowledge Quiz', 'Monipur High School & College', 'Won first place in the General Knowledge Quiz Competition organized by Monipur High School & College.', '[]', 8),
+  ('leadership', '2020', 'Team Coordinator', 'National Hackathon 2020', null, '[]', 1),
+  ('leadership', '2018–19', 'Team Leader', 'Codesmash 2018 and Gyanjam 2019 programming competitions', null, '[]', 2),
+  ('leadership', '2016–17', 'Prefect & Class Captain', 'Adamjee Cantonment College', null, '[]', 3),
+  ('leadership', null, 'Research Mentor', 'Mentored juniors on deep learning and computer vision research', null, '[]', 4);
+
 
 insert into public.certifications (title, issuer, date_label, url, sort_order) values
-  ('Introduction to Python', 'Kaggle', 'Apr 2023', null, 1),
-  ('Networking Devices and Initial Configuration', 'Cisco', 'Mar 2023', null, 2),
-  ('Python Essentials 1', 'Cisco', 'Feb 2023', null, 3),
-  ('Networking Basics', 'Cisco', 'Feb 2023', null, 4),
-  ('Introduction to Cybersecurity', 'Cisco', 'Feb 2023', null, 5),
-  ('Cybersecurity Pathway', 'Cisco', 'Feb 2023', null, 6);
+  ('Introduction to Python', 'Kaggle', 'Apr 2023', 'https://www.kaggle.com/learn/certification/abirhasan1703100/python', 1),
+  ('Networking Devices and Initial Configuration', 'Cisco', 'Mar 2023', 'https://www.credly.com/badges/47cd4cab-58e4-4bb3-9878-81aa1f8815a8/linked_in_profile', 2),
+  ('Python Essentials 1', 'Cisco', 'Feb 2023', 'https://drive.google.com/file/d/1NVvh5ddtRbhg_sbFdKw3N-SOhSRp65zf/view?usp=sharing', 3),
+  ('Networking Basics', 'Cisco', 'Feb 2023', 'https://drive.google.com/file/d/1zM_QOunXHr8D0Bp4gZ4TXcqTZFfQFiAq/view?usp=sharing', 4),
+  ('Introduction to Cybersecurity', 'Cisco', 'Feb 2023', 'https://drive.google.com/file/d/1aL3bljGOAv3DseNgWk1Oge_bpHgE1PW4/view?usp=sharing', 5),
+  ('Cybersecurity Pathway', 'Cisco', 'Feb 2023', 'https://drive.google.com/file/d/11OR0pPyX82ZjBA9amFcwfDcp95LKSjiD/view?usp=sharing', 6);
+
+-- Tags on certificate cards (Admin → Certifications → Tags).
+update public.certifications set tags = case title
+  when 'Introduction to Python' then '{"Python","Programming"}'
+  when 'Networking Devices and Initial Configuration' then '{"Networking","Cisco IOS"}'
+  when 'Python Essentials 1' then '{"Python","Programming"}'
+  when 'Networking Basics' then '{"Networking","TCP/IP"}'
+  when 'Introduction to Cybersecurity' then '{"Cybersecurity"}'
+  when 'Cybersecurity Pathway' then '{"Cybersecurity","Threat Analysis"}'
+  else tags end::text[];
 
 insert into public.tools (icon, title, description, features, tags, links, sort_order) values
   ('chart', 'Hopfield Neural Network',
