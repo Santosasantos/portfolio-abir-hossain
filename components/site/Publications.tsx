@@ -3,15 +3,18 @@ import { groupMedia, type MediaItem } from "@/lib/media";
 import type { Content, Publication, Section } from "@/lib/content";
 import { DeckFrame, Figures, SlidesCard, Video } from "./Media";
 import PubActions from "./PubActions";
+import GroupTabs, { type TabGroup } from "./GroupTabs";
 import { SectionHead, SmartLink } from "./ui";
 
-const GROUPS: { key: Publication["category"]; title: string }[] = [
-  { key: "journal", title: "Journal Articles" },
-  { key: "conference", title: "Conference Publications" },
-  { key: "chapter", title: "Book Chapters" },
-  { key: "preprint", title: "Preprints & Work in Progress" },
-  { key: "other", title: "Other Publications" },
+/** Tab label, and the type tag shown inside each card. */
+const GROUPS: { key: Publication["category"]; tab: string; tag: string }[] = [
+  { key: "journal", tab: "Journal", tag: "Journal Article" },
+  { key: "conference", tab: "Conference", tag: "Conference Paper" },
+  { key: "chapter", tab: "Book Chapters", tag: "Book Chapter" },
+  { key: "preprint", tab: "Preprints", tag: "Preprint" },
+  { key: "other", tab: "Other", tag: "Publication" },
 ];
+const typeTag = (p: Publication) => GROUPS.find((g) => g.key === p.category)?.tag ?? "Publication";
 
 function Authors({ text, highlight }: { text: string; highlight: string | null }) {
   if (!highlight || !text.includes(highlight)) return <>{text}</>;
@@ -65,7 +68,10 @@ function PubCard({ p }: { p: Publication }) {
 
         <div className="pub-body">
           <div className="pub-top">
-            {p.venue_badge ? <span className="badge badge--venue">{p.venue_badge}</span> : <span />}
+            <div className="badges">
+              <span className={`badge badge--type badge--type-${p.category}`}>{typeTag(p)}</span>
+              {p.venue_badge && <span className="badge badge--venue">{p.venue_badge}</span>}
+            </div>
             {p.date_label && <span className="pub-date">{p.date_label}</span>}
           </div>
           <h3>{p.title}</h3>
@@ -109,6 +115,12 @@ function PubCard({ p }: { p: Publication }) {
 export default function Publications({ c, section, alt }: { c: Content; section: Section; alt: boolean }) {
   const s = c.settings;
   const published = c.publications.filter((p) => /published|accepted|presented/i.test(p.status)).length;
+  // One tab per publication type that has entries; each card carries its own type tag, so no group headings.
+  const groups: TabGroup[] = GROUPS.flatMap((g) => {
+    const items = c.publications.filter((p) => p.category === g.key);
+    return items.length ? [{ key: g.key, label: g.tab, count: items.length,
+      content: <div className="pub-list">{items.map((p) => <PubCard key={p.id} p={p} />)}</div> }] : [];
+  });
   return (
     <section className={`section${alt ? " section--alt" : ""}`} id={section.key} aria-labelledby={`${section.key}-title`}>
       <div className="container">
@@ -125,16 +137,9 @@ export default function Publications({ c, section, alt }: { c: Content; section:
           </div>
         )}
 
-        {GROUPS.map((g) => {
-          const items = c.publications.filter((p) => p.category === g.key);
-          if (!items.length) return null;
-          return (
-            <div key={g.key}>
-              <h3 className="subhead">{g.title}</h3>
-              <div className="pub-list">{items.map((p) => <PubCard key={p.id} p={p} />)}</div>
-            </div>
-          );
-        })}
+        {groups.length > 1
+          ? <div className="block-gap"><GroupTabs id={section.key} label="Publication types" groups={groups} /></div>
+          : groups.map((g) => <div key={g.key}>{g.content}</div>)}
       </div>
     </section>
   );

@@ -3,27 +3,27 @@ import { linkIcon } from "@/lib/linkIcon";
 import type { Content, Education, ScoreLine, Section, TestScore } from "@/lib/content";
 import { ChipList, Paragraphs, SectionHead, SmartLink } from "./ui";
 
-function EducationCard({ e }: { e: Education }) {
+/** One school in the Education card: optional small logo beside the text, document links underneath. */
+function EducationItem({ e }: { e: Education }) {
   const links = (e.links ?? []).filter((l) => l.url);
   return (
-    <article className={`card edu-card${e.logo_url ? " edu-card--logo" : ""}`}>
+    <div className={`edu-item${e.logo_url ? " edu-item--logo" : ""}`}>
       {e.logo_url && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className="org-logo org-logo--lg" src={e.logo_url} alt={`${e.institution} logo`} loading="lazy" />
+        <img className="edu-logo" src={e.logo_url} alt={`${e.institution ?? e.degree} logo`} loading="lazy" />
       )}
-      <div className="edu-body">
-        {e.period && <p className="edu-period">{e.period}</p>}
-        <h4 className="edu-degree">{e.degree}</h4>
-        {e.institution && <p className="edu-inst">{e.institution}</p>}
-        {e.details && <p className="edu-details">{e.details}</p>}
-        {e.note && <p className="edu-note">{e.note}</p>}
+      <div className="edu-text">
+        <h4>{e.degree}</h4>
+        {e.institution && <p>{e.institution}</p>}
+        {(e.period || e.details) && <p className="mono">{[e.period, e.details].filter(Boolean).join(" · ")}</p>}
+        {e.note && <p>{e.note}</p>}
         {links.length > 0 && (
-          <div className="btn-row edu-links">
-            {links.map((l, i) => <SmartLink key={l.url + i} className="btn btn--sm" href={l.url}><Icon name={linkIcon(l)} />{l.label}</SmartLink>)}
-          </div>
+          <p className="edu-docs">
+            {links.map((l, i) => <SmartLink key={l.url + i} className="edu-doc" href={l.url}><Icon name={linkIcon(l)} />{l.label}</SmartLink>)}
+          </p>
         )}
       </div>
-    </article>
+    </div>
   );
 }
 
@@ -70,15 +70,15 @@ export default function About({ c, section, alt }: { c: Content; section: Sectio
       <div className="container">
         <SectionHead section={section} id={`${section.key}-title`} />
 
-        {c.education.length > 0 && (
-          <>
-            <h3 className="subhead subhead--first">Education</h3>
-            <div className="grid edu-grid">{c.education.map((e) => <EducationCard key={e.id} e={e} />)}</div>
-          </>
-        )}
-
-        {(c.focusPoints.length > 0 || c.settings.background) && (
-          <div className={`grid ${c.focusPoints.length && c.settings.background ? "grid--about" : ""} block-gap`}>
+        {(c.education.length > 0 || c.focusPoints.length > 0) && (
+          <div className="grid grid--2">
+            {c.education.length > 0 && (
+              <article className="card">
+                <span className="card-icon"><Icon name="cap" /></span>
+                <h3>Education</h3>
+                <div className="edu-list">{c.education.map((e) => <EducationItem key={e.id} e={e} />)}</div>
+              </article>
+            )}
             {c.focusPoints.length > 0 && (
               <article className="card">
                 <span className="card-icon"><Icon name="bulb" /></span>
@@ -86,14 +86,14 @@ export default function About({ c, section, alt }: { c: Content; section: Sectio
                 <ul className="check-list">{c.focusPoints.map((f) => <li key={f.id}>{f.label}</li>)}</ul>
               </article>
             )}
-            {c.settings.background && (
-              <article className="card prose">
-                <span className="card-icon"><Icon name="cap" /></span>
-                <h3 className="card-title-gap">Background</h3>
-                <Paragraphs text={c.settings.background} />
-              </article>
-            )}
           </div>
+        )}
+
+        {c.settings.background && (
+          <article className="card prose block-gap">
+            <h3 className="card-title-gap">Background</h3>
+            <Paragraphs text={c.settings.background} />
+          </article>
         )}
 
         {c.testScores.length > 0 && (

@@ -11,12 +11,12 @@ export function browserClient() {
   return client;
 }
 
-/** Uploads a file to the public "media" bucket and returns its public URL. */
-export async function uploadMedia(file: File, folder: string) {
+/** Uploads a file to a public bucket ("media" by default, "documents" for education files) and returns its public URL. */
+export async function uploadMedia(file: File, folder: string, bucket = "media") {
   const supabase = browserClient();
   const safe = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/^-+/, "");
   const path = `${folder}/${Date.now()}-${safe}`;
-  const { error } = await supabase.storage.from("media").upload(path, file, { contentType: file.type || undefined, upsert: false });
+  const { error } = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type || undefined, upsert: false });
   if (error) throw new Error(error.message);
-  return supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }

@@ -24,7 +24,9 @@ export type Field = {
   required?: boolean;
   hint?: string;
   options?: { value: string; label: string }[];
-  accept?: string;   // file inputs
+  accept?: string;   // file inputs; on a "links" field, turns on per-row uploads
+  bucket?: string;   // storage bucket for uploads (default "media")
+  presets?: string[]; // "links" with uploads: quick-add buttons, e.g. Certificate, Transcript
   mono?: boolean;    // monospace textarea (BibTeX)
   group?: string;    // fieldset heading in long forms
 };
@@ -177,7 +179,8 @@ export const RESOURCES: Resource[] = [
       { name: "details", label: "Details", type: "text", hint: "e.g. CGPA, scholarships" },
       { name: "note", label: "Note", type: "textarea", hint: "e.g. thesis title" },
       { name: "logo_url", label: "Institution logo", type: "file", accept: "image/*", hint: "Optional. Shown on the education card when uploaded." },
-      { name: "links", label: "Documents", type: "links", hint: "Optional. One button per line: Certificate | https://…  ·  Transcript | https://…  ·  Thesis Book | https://…" },
+      { name: "links", label: "Documents", type: "links", accept: ".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx", bucket: "documents", presets: ["Certificate", "Transcript", "Thesis Book"],
+        hint: "Optional. Each row becomes a button on the site. Upload a PDF or image (stored in the “documents” bucket, max 20 MB) or paste a link." },
     ],
   },
   {

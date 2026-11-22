@@ -7,6 +7,7 @@ import type { Field } from "@/lib/admin/resources";
 import type { FormState } from "@/lib/admin/actions";
 import ColorField from "./ColorField";
 import FileField from "./FileField";
+import LinksField from "./LinksField";
 import MediaField from "./MediaField";
 
 type Props = {
@@ -26,6 +27,9 @@ function SaveButton() {
 function Input({ field, value, folder }: { field: Field; value: string; folder: string }) {
   const id = `f-${field.name}`;
   const common = { id, name: field.name, defaultValue: value, required: field.required };
+
+  if (field.type === "links" && field.accept)
+    return <LinksField id={id} name={field.name} initial={value} accept={field.accept} bucket={field.bucket} presets={field.presets} folder={`${folder}/${field.name}`} />;
 
   switch (field.type) {
     case "boolean":
