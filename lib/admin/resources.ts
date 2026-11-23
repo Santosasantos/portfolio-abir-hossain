@@ -4,6 +4,9 @@
  */
 import { ICON_OPTIONS } from "@/lib/icons";
 
+/** Files the "documents" bucket accepts (see 0009_documents_bucket.sql). */
+const DOC_ACCEPT = ".pdf,.ppt,.pptx,.doc,.docx,.png,.jpg,.jpeg,.webp";
+
 export type FieldType =
   | "text" | "textarea" | "url" | "number" | "date" | "boolean"
   | "select" | "icon"
@@ -179,8 +182,8 @@ export const RESOURCES: Resource[] = [
       { name: "details", label: "Details", type: "text", hint: "e.g. CGPA, scholarships" },
       { name: "note", label: "Note", type: "textarea", hint: "e.g. thesis title" },
       { name: "logo_url", label: "Institution logo", type: "file", accept: "image/*", hint: "Optional. Shown on the education card when uploaded." },
-      { name: "links", label: "Documents", type: "links", accept: ".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx", bucket: "documents", presets: ["Certificate", "Transcript", "Thesis Book"],
-        hint: "Optional. Each row becomes a button on the site. Upload a PDF or image (stored in the “documents” bucket, max 20 MB) or paste a link." },
+      { name: "links", label: "Documents", type: "links", accept: DOC_ACCEPT, bucket: "documents", presets: ["Certificate", "Transcript", "Thesis Book"],
+        hint: "Optional. Each row becomes a button on the site. Upload a PDF, Word file or image (stored in the “documents” bucket, max 50 MB) or paste a link." },
     ],
   },
   {
@@ -295,7 +298,8 @@ export const RESOURCES: Resource[] = [
       { name: "period", label: "Period", type: "text" },
       { name: "bullets", label: "Highlights", type: "lines", hint: "One per line" },
       { name: "logo_url", label: "Organization logo", type: "file", accept: "image/*", hint: "Optional. Shown beside the role when uploaded." },
-      { name: "links", label: "Work links", type: "links", hint: "Optional. One per line: Thesis Book | https://…  ·  Industrial Attachment Report | https://…  ·  Presentation Slides | https://…" },
+      { name: "links", label: "Work files & links", type: "links", accept: DOC_ACCEPT, bucket: "documents", presets: ["Industrial Attachment Report", "Presentation Slides", "Thesis Book"],
+        hint: "Optional. Each row becomes a button under this entry. Upload a PDF, slides (PPTX), Word file or image (stored in the “documents” bucket, max 50 MB) or paste a link." },
     ],
   },
   {

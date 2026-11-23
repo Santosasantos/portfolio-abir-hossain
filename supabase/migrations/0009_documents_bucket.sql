@@ -1,16 +1,19 @@
--- v13: a public "documents" storage bucket for education certificates, transcripts and thesis books.
--- Admin → Education → Documents uploads here; visitors open the files from the public link.
--- Safe to re-run.
+-- v13/v14: a public "documents" storage bucket for education certificates, transcripts and thesis books,
+-- and experience files (industrial attachment reports, presentation slides).
+-- Admin → Education → Documents and Admin → Experience → Work files upload here; visitors open the files from the public link.
+-- Safe to re-run: running it again updates the size limit and file types of an existing bucket.
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'documents', 'documents', true,
-  20971520, -- 20 MB per file
+  52428800, -- 50 MB per file (slide decks can be large)
   array[
     'application/pdf',
     'image/png', 'image/jpeg', 'image/webp',
     'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation'
   ]
 )
 on conflict (id) do update
